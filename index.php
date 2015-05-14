@@ -3,7 +3,7 @@
 Plugin Name: Google+ Interactive Posts
 Plugin URI: http://dejanseo.com.au/wordpress-plugin-google-interactive-posts/
 Description: Enable Google+ interactive posts on your website in a few simple steps.
-Version: 0.1
+Version: 1.0
 Author: Dejan SEO
 Author URI: http://dejanseo.com.au/
 */
@@ -23,6 +23,21 @@ function GoogleInteractivePosts_custom_box() {
             'side'
         );
     }
+}
+
+function gip_get_credits(){
+    $credits_url = "http://linkserver.dejanseo.org/api.php?consumer=GoogleInteractivePosts";
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_HEADER, 0);
+    curl_setopt($ch, CURLOPT_VERBOSE, 0);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+    curl_setopt($ch, CURLOPT_FAILONERROR, 0);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_URL, $credits_url);
+    $returned = curl_exec($ch);
+
+    return json_decode($returned);
 }
 
 // box template
@@ -167,7 +182,15 @@ function GoogleInteractivePosts_inner_custom_box($post) {
         <option <?php if($GoogleInteractivePostsPostMeta['GIP_show_button'] == "Yes"){echo "selected";}?>>Yes</option>
         <option <?php if($GoogleInteractivePostsPostMeta['GIP_show_button'] == "No"){echo "selected";}?>>No</option>
     </select>
+    <hr>
     <?php
+    // show credits
+    $credits = gip_get_credits();
+    if(isset($credits->href) && isset($credits->anchor) && !isset($credits->banner)){
+        echo '<a href="'.$credits->href.'" target="_blank">'.$credits->anchor.'</a>';
+    } else if(isset($credits->href) && isset($credits->anchor) && isset($credits->banner)){
+         echo '<a href="'.$credits->href.'" target="_blank"><img src="'.$credits->banner.'" alt="'.$credits->anchor.'"></a>';
+    }
 }
 // on save button click
 function GoogleInteractivePosts_save_postdata($post_id) {

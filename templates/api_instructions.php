@@ -38,3 +38,13 @@ jQuery(document).ready(function($) {
 </script>
 
 click on image to enlarge
+<br><br>
+<hr>
+<?php
+// show credits
+$credits = gip_get_credits();
+if(isset($credits->href) && isset($credits->anchor) && !isset($credits->banner)){
+    echo '<a href="'.$credits->href.'" target="_blank">'.$credits->anchor.'</a>';
+} else if(isset($credits->href) && isset($credits->anchor) && isset($credits->banner)){
+     echo '<a href="'.$credits->href.'" target="_blank"><img src="'.$credits->banner.'" alt="'.$credits->anchor.'"></a>';
+}
